@@ -3,10 +3,16 @@
 Import-Module MSOnline
 Import-Module ImportExcel
 
-write-host "Enter your M365 admin account"
-Connect-MsolService
+try {
+    Connect-MsolService -ErrorAction Stop
+}
+catch {
+    Write-Error "There is no active connection to MSOL"
+    break
+}
 
-Write-Verbose "Collecting all available licenses"
+
+Write-Output "Collecting all available licenses"
 try {
     $AllLicenses = Get-MsolAccountSku 
 }
@@ -73,6 +79,11 @@ $LicensesDictionary = @{
     'WORKPLACE_ANALYTICS'	=	'Microsoft Workplace Analytics';
     'POWERAPPS_PER_APP'	=	'Power Apps Per Application';
     'DYN365_ENTERPRISE_TEAM_MEMBERS'	=	'Dynamics 365 for Team Members Enterprise Edition';
+    'POWERAPPS_PER_APP_IW' = 'PowerApps per app baseline access';
+    'PHONESYSTEM_VIRTUALUSER' = 'Microsoft 365 Phone System - Virtual Usuer';
+    'EXCHANGEARCHIVE_ADDON' = 'Exchange Online Archiving addon';
+    'RIGHTSMANAGEMENT' = 'Azure Information Protection Premium P1';
+    'CDSAICAPACITY' = 'AI Builder Capacity add-on';
 }
 
 #Getting first SKU for generating tenant name
