@@ -1,5 +1,6 @@
 #Requires -module MSOnline
 #Requires -module ImportExcel
+#Requires -Version 5.1
 Import-Module MSOnline
 Import-Module ImportExcel
 
@@ -22,7 +23,7 @@ catch {
 
 #List of SkuIDs and friendly names
 $LicensesDictionary = @{
-    'STREAM'                                = 'Microsoft Stream Trial';
+    'STREAM'                                = 'Microsoft Stream Trial';
     'POWER_BI_PRO'                          = 'Power BI Pro';
     'SPZA_IW'                               = 'App Connect';
     'WINDOWS_STORE'                         = 'Windows Store for Business';
@@ -84,6 +85,27 @@ $LicensesDictionary = @{
     'EXCHANGEARCHIVE_ADDON'                 = 'Exchange Online Archiving addon';
     'RIGHTSMANAGEMENT'                      = 'Azure Information Protection Premium P1';
     'CDSAICAPACITY'                         = 'AI Builder Capacity add-on';
+    'STREAM_STORAGE'                        = 'Microsoft Stream Storage Add-On (500 GB)';
+    'VISIOCLIENT'                           = 'Visio Online Plan 2';
+    'M365_INFO_PROTECTION_GOVERNANCE'       = 'Microsoft 365 E5 Information Protection and Governance';
+    'THREAT_INTELLIGENCE'                   = 'Microsoft Defender for Office 365 (Plan 2)';
+    'FLOW_BUSINESS_PROCESS'                 = 'Power Automate per flow plan'
+    'DYN365_TEAM_MEMBERS'                   = 'Dynamics 365 Team Members'
+    'REMOTE_ASSIST_DEVICE'                  = 'Dynamics 365 Remote Assist Device';
+    'MCOPSTN1'                              = 'Skype for Business PSTN Domestic Calling';
+    'AAD_PREMIUM_P2'                        = 'Azure Active Directory Premium P2';
+    'MTR_PREM'                              = 'Teams Rooms Premium';
+    'OFFICESUBSCRIPTION'                    = 'Microsoft 365 Apps for Enterprise';
+    'SPE_E5'                                = 'Microsoft 365 E5';
+    'PROJECT_PLAN1_DEPT'                    = 'Project Plan 1 (for Department)';
+    'ADV_COMMS'                             = 'Advanced Communications';
+    'POWERAUTOMATE_ATTENDED_RPA'            = 'Power Automate per user with attended RPA plan';
+    'CDS_DB_CAPACITY'                       = 'Common Data Service Database Capacity';
+    'DYN365_ENTERPRISE_SALES'               = 'Dynamics 365 For Sales and Customer Service Enterprise Edition';
+    'STREAM_P2'                             = 'Microsoft Stream Plan 2';
+    'CDS_LOG_CAPACITY'                      = 'Common Data Service Log Capacity';
+    'ATP_ENTERPRISE'                        = 'Microsoft Defender for Office 365 (Plan 1)';
+    'CDS_API_CAPACITY'                      = 'Common Data Service API Capacity';
 }
 
 #Getting first SKU for generating tenant name
@@ -95,12 +117,20 @@ $ReportName = $CurrentDate + '_' + $OrganizationName + '.xlsx'
 #Formatting the result and exporting to .xlsx
 $LicensesSelection = @(
     @{
-        L = 'Product Title'; 
+        L = 'License (Friendly name)'; 
         E = {
+            
             $([string]$CompanyName, [string]$SkuID = $_.AccountSkuId -split ':'
-            $LicensesDictionary[$SkuID])
+            "$($LicensesDictionary[$SkuID])")
         }
     }, 
+    @{
+        L = 'SKU Name';
+        E = {
+            $([string]$CompanyName, [string]$SkuID = $_.AccountSkuId -split ':'
+            $SkuID)
+        }
+    },
     @{
         L = 'Valid Licenses'; 
         E = {
@@ -116,14 +146,14 @@ $LicensesSelection = @(
     }
 )
 
-$LicensesToExport = $AllLicenses | Select-Object $LicensesSelection
+$LicensesToExport = $AllLicenses | Select-Object $LicensesSelection | Sort-Object 'SKU Name'
 
 try {
     $LicensesToExport | Export-Excel -Path $ReportName -AutoSize -AutoFilter -TableStyle Medium2
     Write-Verbose "Report generated and exported to $ReportName"
 }
 catch {
-    Write-Error "Can't export report"
+    Write-Error "Can't export report. $($_.Exception)" 
 }
 
 
