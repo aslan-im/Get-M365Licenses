@@ -1,6 +1,6 @@
 #Requires -module MSOnline
 #Requires -module ImportExcel
-#Requires -Version 5.1
+#Requires -Version 5
 Import-Module MSOnline
 Import-Module ImportExcel
 
@@ -8,7 +8,7 @@ try {
     Connect-MsolService -ErrorAction Stop
 }
 catch {
-    Write-Error "There is no active connection to MSOL"
+    Write-Error "There is no active connection to MSOL. $($_.Exception)"
     break
 }
 
@@ -106,6 +106,7 @@ $LicensesDictionary = @{
     'CDS_LOG_CAPACITY'                      = 'Common Data Service Log Capacity';
     'ATP_ENTERPRISE'                        = 'Microsoft Defender for Office 365 (Plan 1)';
     'CDS_API_CAPACITY'                      = 'Common Data Service API Capacity';
+    'POWERAPPS_DEV'                         = 'Power Apps for Developer';
 }
 
 #Getting first SKU for generating tenant name
