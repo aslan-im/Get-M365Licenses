@@ -1,3 +1,10 @@
+[CmdletBinding()]
+param (
+    [Parameter(Mandatory=$false)]
+    [PSCredential]
+    $Credential
+)
+
 #Requires -module MSOnline
 #Requires -module ImportExcel
 #Requires -Version 5
@@ -5,7 +12,7 @@ Import-Module MSOnline
 Import-Module ImportExcel
 
 try {
-    Connect-MsolService -ErrorAction Stop
+    Connect-MsolService -Credential $Credential -ErrorAction Stop
 }
 catch {
     Write-Error "There is no active connection to MSOL. $($_.Exception)"
